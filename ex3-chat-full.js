@@ -42,6 +42,7 @@ const chatWithGPT = async () => {
   ];
 
   while (!stop) {
+    // === READ section ===
     const userInput = await askQuestion(colors.reset + "You: ");
 
 
@@ -50,14 +51,15 @@ const chatWithGPT = async () => {
       readline.close();
     } else {
       try {
+        // === CALL section ===
         allMessages.push({ role: "user", content: userInput });
         const response = await openai.chat.completions.create({
           model: "gpt-4o",
           messages: allMessages
         });
-        
         allMessages.push(response.choices[0].message);
 
+        // === PRINT section ===
 		let txt = markdownToTerminal(response.choices[0].message.content);
         console.log(colors.cyan +`GPT: ${txt}`);
 

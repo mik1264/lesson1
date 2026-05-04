@@ -24,6 +24,7 @@ const chatWithGPT = async () => {
   console.log("ChatGPT Terminal Assistant\nType 'quit' to exit.\n");
 
   while (!stop) {
+    // === READ section ===
     const userInput = await askQuestion(colors.reset + "You: ");
 
     if (userInput.toLowerCase() === 'quit') {
@@ -31,6 +32,7 @@ const chatWithGPT = async () => {
       readline.close();
     } else {
       try {
+        // === CALL section ===
         const response = await openai.chat.completions.create({
           model: "gpt-4o",
           messages: [
@@ -39,6 +41,7 @@ const chatWithGPT = async () => {
           ],
         });
 
+        // === PRINT section ===
         console.log(colors.bold + `GPT: ${response.choices[0].message.content.trim()}`);
       } catch (error) {
         console.error("Error connecting to OpenAI: ", error);
