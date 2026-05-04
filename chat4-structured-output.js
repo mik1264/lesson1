@@ -39,23 +39,44 @@ const chatWithGPT = async () => {
     } else {
       try {
         const response = await openai.chat.completions.create({
-          model: "gpt-3.5-turbo-1106", //to support JSON mode and seed
-          response_format: { type: "json_object" },
+          model: "gpt-4o",
           seed: 12345,
           temperature: 0,
+          response_format: {
+            type: "json_schema",
+            json_schema: {
+              name: "color",
+              strict: true,
+              schema: {
+                type: "object",
+                additionalProperties: false,
+                properties: {
+                  hex: {
+                    type: "string",
+                    description: "Hex code, e.g. #AABBCC",
+                  },
+                  description: {
+                    type: "string",
+                    description: "A poetic name or description of the color.",
+                  },
+                },
+                required: ["hex", "description"],
+              },
+            },
+          },
           messages: [
-			  {
-				role: "system",
-				content: "You are a helpful assistant designed to output JSON. Use the following example of structure for JSON when asked about color "+ `{"hex": "#AABBCC", "description":"The poetic name of the color is bright green."}`,
-			  },
-			  { role: "user", content: userInput },
-		  ]
+            { role: "system", content: "You answer color questions. Respond per the provided schema." },
+            { role: "user", content: userInput },
+          ],
         });
 
-		console.log(colors.cyan +`GPT: `);
-		
-        console.log(colors.cyan +`GPT: ${response.choices[0].message.content}`);
-        console.log(colors.white +`\nfingerprint: ${util.inspect(response,{depth: Infinity})}`);
+        const choice = response.choices[0];
+        if (choice.message.refusal) {
+          console.log(colors.red + `Refusal: ${choice.message.refusal}`);
+        } else {
+          const parsed = JSON.parse(choice.message.content);
+          console.log(colors.cyan + `GPT: ${util.inspect(parsed, { colors: false })}`);
+        }
       } catch (error) {
         console.error("Error connecting to OpenAI: ", error);
       }
