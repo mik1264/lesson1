@@ -1,6 +1,23 @@
-
 let {OpenAI} = require("openai");
 let util = require("util");
+let fs = require("fs");
+let path = require("path");
+
+// Plain text passes through. "img:./photo.jpg [optional question]" attaches
+// the image inline as a data URL so the model can see it.
+function buildUserContent(input) {
+  const m = input.match(/^img:(\S+)\s*(.*)$/);
+  if (!m) return input;
+  const filepath = m[1];
+  const question = m[2] || "What color is this?";
+  const ext = path.extname(filepath).slice(1).toLowerCase();
+  const mime = ext === "jpg" ? "jpeg" : ext;
+  const b64 = fs.readFileSync(filepath).toString("base64");
+  return [
+    { type: "text", text: question },
+    { type: "image_url", image_url: { url: `data:image/${mime};base64,${b64}` } },
+  ];
+}
 
 const openai = new OpenAI();
 
@@ -29,8 +46,6 @@ const chatWithGPT = async () => {
   console.log("ChatGPT Terminal Assistant\nType 'quit' to exit.\n");
 
   while (!stop) {
-    //const userInput = await askQuestion("You: ");
-    //const userInput = await askQuestion(colors.green + "You: ");
     const userInput = await askQuestion(colors.reset + "You: ");
 
     if (userInput.toLowerCase() === 'quit') {
@@ -39,7 +54,7 @@ const chatWithGPT = async () => {
     } else {
       try {
         const response = await openai.chat.completions.create({
-          model: "gpt-5.5", //gpt-5.5-2026-04-23
+          model: "gpt-4o",
           seed: 12345,
           response_format: {
             type: "json_schema",
@@ -65,7 +80,7 @@ const chatWithGPT = async () => {
           },
           messages: [
             { role: "system", content: "You answer color questions. Respond per the provided schema." },
-            { role: "user", content: userInput },
+            { role: "user", content: buildUserContent(userInput) },
           ],
         });
 

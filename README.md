@@ -20,6 +20,7 @@ Each example is a standalone script: `node ex<N>-<topic>.js`.
 | `ex3-chat-full.js` | Same READ/EVAL/PRINT REPL shape as ex2, but keeps an `allMessages` array so the assistant remembers earlier turns. Includes a tiny markdown-to-ANSI renderer for `**bold**`. |
 | `ex4-call-functions.js` | Assistants API + function calling. Defines a `sum2(a, b)` tool, polls the run, and submits tool outputs back. Demonstrates the `requires_action` cycle. |
 | `ex5-structured-output.js` | Structured Outputs via `response_format: { type: "json_schema", strict: true }`. The model returns guaranteed-valid JSON matching a color schema. Also handles `refusal`. |
+| `ex6-vision.js` | Same color-schema setup as ex5, but accepts image input. Type `img:<path> [optional question]` to send a local image inline as a base64 data URL; plain text still works. |
 
 ## Notes
 
