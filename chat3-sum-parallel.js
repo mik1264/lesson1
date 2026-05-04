@@ -90,7 +90,7 @@ const chatWithGPT = async () => {
 				chatThread.id,
 				run.id
 			  );
-			  await new Promise((resolve,reject)=>setTimeout(resolve(),300));
+			  await new Promise((resolve,reject)=>setTimeout(resolve,300));
 			  
 			  // tool usage mix-in
 			  if (run2.status == 'requires_action') {

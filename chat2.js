@@ -73,7 +73,7 @@ const chatWithGPT = async () => {
 				chatThread.id,
 				run.id
 			  );
-			  await new Promise((resolve,reject)=>setTimeout(resolve(),300));
+			  await new Promise((resolve,reject)=>setTimeout(resolve,300));
 			  } while (run2.status!='completed');
 		  
 		 // console.log(util.inspect(run2,{depth: Infinity}));
