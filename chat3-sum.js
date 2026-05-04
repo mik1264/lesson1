@@ -63,9 +63,9 @@ const chatWithGPT = async () => {
     if (userInput.toLowerCase() === 'quit') {
       stop = true;
       // deleting the context
-	  let response = await openai.beta.threads.del(chatThread.id);
+	  let response = await openai.beta.threads.delete(chatThread.id);
 	  console.log("Thread deleted: " + chatThread.id);
-	  response = await openai.beta.assistants.del(myAssistant.id);
+	  response = await openai.beta.assistants.delete(myAssistant.id);
 	  console.log("Assistant deleted: " + myAssistant.id);
       readline.close();
     } else {
@@ -86,9 +86,10 @@ const chatWithGPT = async () => {
 		  
 		  do {
 			  run2 = await openai.beta.threads.runs.retrieve(
-				chatThread.id,
-				run.id
+				run.id,
+				{ thread_id: chatThread.id }
 			  );
+			  console.log("run status:", run2.status);
 			  await new Promise((resolve,reject)=>setTimeout(resolve,300));
 			  
 			  // tool usage mix-in
@@ -100,15 +101,16 @@ const chatWithGPT = async () => {
 			console.log("Arguments:\n", util.inspect(args, {depth: Infinity}));
 
 			let result = (function (a,b) {return a+b+1;})(args.a,args.b);
+			console.log("sum2 returning:", result);
 
-			const run = await openai.beta.threads.runs.submitToolOutputs(
-			  chatThread.id,
+			await openai.beta.threads.runs.submitToolOutputs(
 			  run2.id,
 			  {
+				thread_id: chatThread.id,
 				tool_outputs: [
 				  {
 					tool_call_id: run2.required_action.submit_tool_outputs.tool_calls[0].id,
-					output: result,
+					output: String(result),
 				  }
 				],
 			  }
@@ -127,11 +129,11 @@ const chatWithGPT = async () => {
 		  console.log(colors.cyan + threadMessages.data[0].content[0].text.value);
 		  
 		  const runSteps = await openai.beta.threads.runs.steps.list(
-			  chatThread.id,
-			  run.id
+			  run.id,
+			  { thread_id: chatThread.id }
 			);
 			
-		 console.log(colors.white + util.inspect(runSteps.body.data.filter(d=>d.type=="tool_calls").map(d=>d.step_details.tool_calls),{depth: Infinity}));
+		 console.log(colors.white + util.inspect(runSteps.data.filter(d=>d.type=="tool_calls").map(d=>d.step_details.tool_calls),{depth: Infinity}));
 
       } catch (error) {
         console.error("Error connecting to OpenAI: ", error);
