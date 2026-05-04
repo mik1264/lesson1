@@ -9,6 +9,8 @@ async function main() {
     model: "gpt-4o",
   });
 
+  console.log(completion);
+  console.log("--------------------------------");
   console.log(completion.choices[0].message.content);
 }
 
