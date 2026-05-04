@@ -1,0 +1,5 @@
+.env
+.envrc
+.direnv/
+node_modules/
+gpt-log.txt

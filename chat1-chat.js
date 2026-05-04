@@ -27,7 +27,7 @@ function markdownToTerminal(str) {
     // Replace the Markdown bold syntax with ANSI codes
     // \x1b[1m is the ANSI code for bold
     // \x1b[0m resets the formatting
-    return str.replace(/\*\*(.*?)\*\*/g, '\x1b[37m$1\x1b[36m');
+    return str.replace(/\*\*(.*?)\*\*/g, '\x1b[1m$1\x1b[0m'+colors.cyan);
 }
 
 const chatWithGPT = async () => {
@@ -42,8 +42,6 @@ const chatWithGPT = async () => {
   ];
 
   while (!stop) {
-    //const userInput = await askQuestion("You: ");
-    //const userInput = await askQuestion(colors.green + "You: ");
     const userInput = await askQuestion(colors.reset + "You: ");
 
 
@@ -54,11 +52,7 @@ const chatWithGPT = async () => {
       try {
         allMessages.push({ role: "user", content: userInput });
         const response = await openai.chat.completions.create({
-          //model: "gpt-3.5-turbo-1106", //to support JSON mode and seed
-          model: "gpt-4-1106-preview",
-          //response_format: { type: "json_object" },
-          //seed: 2,
-          //stream: true,
+          model: "gpt-4o",
           messages: allMessages
         });
         
@@ -66,13 +60,6 @@ const chatWithGPT = async () => {
 
 		let txt = markdownToTerminal(response.choices[0].message.content);
         console.log(colors.cyan +`GPT: ${txt}`);
-        console.log(colors.white + util.inspect(response.choices[0].message));
-
-
-// 		console.log(colors.cyan +`GPT: `);		
-// 		for await (const chunk of response) {
-// 			process.stdout.write(chunk.choices[0]?.delta?.content ?? "");
-// 		  }
 
       } catch (error) {
         console.error("Error connecting to OpenAI: ", error);
