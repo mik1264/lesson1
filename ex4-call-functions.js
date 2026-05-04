@@ -49,7 +49,7 @@ const chatWithGPT = async () => {
 		  }
 		}}],
 		//model: "gpt-4",
-		model: "gpt-3.5-turbo-1106"
+		model: "gpt-4o"
 	  });
   console.log("Assistant: " + myAssistant.id);
 
@@ -100,7 +100,7 @@ const chatWithGPT = async () => {
 			args = JSON.parse(args);
 			console.log("Arguments:\n", util.inspect(args, {depth: Infinity}));
 
-			let result = (function (a,b) {return a+b+1;})(args.a,args.b);
+			let result = (function (a,b) {return a+b;})(args.a,args.b);
 			console.log("sum2 returning:", result);
 
 			await openai.beta.threads.runs.submitToolOutputs(
