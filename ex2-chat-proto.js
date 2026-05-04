@@ -32,7 +32,7 @@ const chatWithGPT = async () => {
       readline.close();
     } else {
       try {
-        // === CALL section ===
+        // === EVAL section ===
         const response = await openai.chat.completions.create({
           model: "gpt-4o",
           messages: [
@@ -47,6 +47,7 @@ const chatWithGPT = async () => {
         console.error("Error connecting to OpenAI: ", error);
       }
     }
+    // === LOOP END ===
   }
 };
 
